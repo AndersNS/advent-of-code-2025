@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"aoc-2025/day01"
+	"aoc-2025/day02"
 )
 
 type SolutionFunc func(string) (string, error)
@@ -34,6 +35,10 @@ func main() {
 		1: {
 			1: day01.Part1,
 			2: day01.Part2,
+		},
+		2: {
+			1: day02.Part1,
+			2: day02.Part2,
 		},
 	}
 	inputFile := filepath.Join(fmt.Sprintf("day%02d", *day), "input.txt")
