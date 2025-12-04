@@ -20,8 +20,8 @@ go test
 Copy the `day01` folder structure and update the package name:
 
 ```bash
-cp -r day01 day02
-find day02 -type f -name "*.go" -exec sed -i 's/day01/day02/g' {} +
+cp -r day02 day03
+find day03 -type f -name "*.go" -exec sed -i 's/day02/day03/g' {} +
 ```
 
 ## Hyperfine benchmark
