@@ -12,6 +12,7 @@ import (
 	"aoc-2025/day02"
 	"aoc-2025/day03"
 	"aoc-2025/day04"
+	"aoc-2025/day05"
 )
 
 type SolutionFunc func(string) (string, error)
@@ -40,6 +41,10 @@ func main() {
 		4: {
 			1: day04.Part1,
 			2: day04.Part2,
+		},
+		5: {
+			1: day05.Part1,
+			2: day05.Part2,
 		},
 	}
 	inputFile := filepath.Join(fmt.Sprintf("day%02d", *day), "input.txt")
