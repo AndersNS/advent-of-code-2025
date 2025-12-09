@@ -22,6 +22,11 @@ type PointPair struct {
 	area int64
 }
 
+type Range struct {
+	min int64
+	max int64
+}
+
 func (p1 Point) Area(p2 Point) int64 {
 	xDiff := int64(0)
 	if p1.X > p2.X {
@@ -170,6 +175,37 @@ func Part2(inputFile string) (string, error) {
 
 	// printGrid(completeGrid, maxY, maxX)
 
+	// Pre-compute filled ranges for fast boundary checking
+	fmt.Println("Computing filled ranges for optimization")
+	filledRangeX := make(map[int64]Range)
+	filledRangeY := make(map[int64]Range)
+
+	for p := range completeGrid {
+		// Track min/max Y for each X
+		if r, exists := filledRangeX[p.X]; exists {
+			if p.Y < r.min {
+				filledRangeX[p.X] = Range{min: p.Y, max: r.max}
+			}
+			if p.Y > r.max {
+				filledRangeX[p.X] = Range{min: r.min, max: p.Y}
+			}
+		} else {
+			filledRangeX[p.X] = Range{min: p.Y, max: p.Y}
+		}
+
+		// Track min/max X for each Y
+		if r, exists := filledRangeY[p.Y]; exists {
+			if p.X < r.min {
+				filledRangeY[p.Y] = Range{min: p.X, max: r.max}
+			}
+			if p.X > r.max {
+				filledRangeY[p.Y] = Range{min: r.min, max: p.X}
+			}
+		} else {
+			filledRangeY[p.Y] = Range{min: p.X, max: p.X}
+		}
+	}
+
 	// Generate all point pairs and sort by area (descending)
 	var pairs []PointPair
 	for i, p1 := range redpoints {
@@ -194,7 +230,7 @@ func Part2(inputFile string) (string, error) {
 		if pair.area <= biggestArea {
 			break
 		}
-		if isRectangleFilled(pair.p1, pair.p2, completeGrid) {
+		if isRectangleFilled(pair.p1, pair.p2, filledRangeX, filledRangeY) {
 			biggestArea = pair.area
 		}
 	}
@@ -202,7 +238,7 @@ func Part2(inputFile string) (string, error) {
 	return strconv.FormatInt(biggestArea, 10), nil
 }
 
-func isRectangleFilled(p1, p2 Point, grid map[Point]string) bool {
+func isRectangleFilled(p1, p2 Point, filledRangeX, filledRangeY map[int64]Range) bool {
 	minX := p1.X
 	maxX := p2.X
 	if p2.X < p1.X {
@@ -217,13 +253,22 @@ func isRectangleFilled(p1, p2 Point, grid map[Point]string) bool {
 		maxY = p1.Y
 	}
 
-	for y := minY; y <= maxY; y++ {
-		for x := minX; x <= maxX; x++ {
-			if _, exists := grid[Point{X: x, Y: y}]; !exists {
-				return false
-			}
+	// Boundary check: for each X, verify filled range covers [minY, maxY]
+	for x := minX; x <= maxX; x++ {
+		r, exists := filledRangeX[x]
+		if !exists || r.min > minY || r.max < maxY {
+			return false
 		}
 	}
+
+	// Boundary check: for each Y, verify filled range covers [minX, maxX]
+	for y := minY; y <= maxY; y++ {
+		r, exists := filledRangeY[y]
+		if !exists || r.min > minX || r.max < maxX {
+			return false
+		}
+	}
+
 	return true
 }
 
