@@ -3,14 +3,14 @@
 # Parse command line arguments
 while getopts "d:" opt; do
   case $opt in
-    d)
-      DAY=$OPTARG
-      ;;
-    \?)
-      echo "Invalid option: -$OPTARG" >&2
-      echo "Usage: $0 -d <day_number>"
-      exit 1
-      ;;
+  d)
+    DAY=$OPTARG
+    ;;
+  \?)
+    echo "Invalid option: -$OPTARG" >&2
+    echo "Usage: $0 -d <day_number>"
+    exit 1
+    ;;
   esac
 done
 
@@ -25,7 +25,7 @@ fi
 DAY=$(printf "%02d" $DAY)
 
 # Calculate previous day
-PREV_DAY=$(printf "%02d" $((10#$DAY - 1)))
+PREV_DAY=00
 
 NEW_DIR="day$DAY"
 PREV_DIR="day$PREV_DAY"
